@@ -8,8 +8,9 @@ sensor.reset()
 sensor.set_pixformat(sensor.GRAYSCALE)
 sensor.set_framesize(sensor.QQVGA)
 sensor.set_windowing((120,120))
-sensor.skip_frames(time = 2000)
 sensor.set_contrast(3)
+sensor.skip_frames(time = 2000)
+
 sensor.set_auto_gain(False)
 sensor.set_auto_whitebal(False)
 clock = time.clock()
@@ -43,15 +44,15 @@ def buscarNegros():
 
             c = blob.count()
 
-            img.draw_rectangle(blob.rect(), color = [0, 0, 0], thickness = 4)
+            #img.draw_rectangle(blob.rect(), color = [0, 0, 0], thickness = 4)
 
             #print("Centro en x: ", blob.cx(), "Centro en y: ", blob.cy())
 
-            img.draw_cross(blob.cx(), blob.cy(),  color = [0, 0, 0], thickness = 2, size = 5)
+            #img.draw_cross(blob.cx(), blob.cy(),  color = [0, 0, 0], thickness = 2, size = 5)
 
             bulto = blob.rect()
 
-            #print(bulto)
+            #print(bulto[3])
 
             if c > 0:
 
@@ -72,7 +73,7 @@ def buscarLineasVerticales(bulto):
 
         if min_degreeV <= l.theta() <= max_degreeV:
 
-            img.draw_line(l.line(), color = (0, 0, 0), thickness = 4)
+            #img.draw_line(l.line(), color = (0, 0, 0), thickness = 4)
 
             #print(l)
 
@@ -97,7 +98,7 @@ def buscarLineasHorizontales(bulto):
 
         if minDegreeH <= t.theta() <= maxDegreeH and math.floor(bulto[2] / 2)  <= t.length() <= bulto[2]:
 
-                img.draw_line(t.line(), color = (0, 0, 0), thickness = 5)
+                #img.draw_line(t.line(), color = (0, 0, 0), thickness = 5)
 
                 #print(t)
 
@@ -118,11 +119,11 @@ def buscarDiagonales(bulto):
 
     for l in img.find_line_segments(roi = bulto ,merge_distance = 40, max_theta_diff = 12):
 
-        if min_degreeS <= l.theta() <= max_degreeS and 30 <= l.length() <= 80: #cambiar por blob
+        if min_degreeS <= l.theta() <= max_degreeS and  0.5 <= l.length()/bulto[2] <= 0.75: #cambiar por blob
 
-            img.draw_line(l.line(), color = (0, 0, 0), thickness = 4)
+            #img.draw_line(l.line(), color = (0, 0, 0), thickness = 4)
 
-            #print(l)
+            #img.draw_string(0, 0, str(l.length()/bulto[2]), color=(255, 0, 0))
 
             dL += 1
 
@@ -141,9 +142,9 @@ def buscarCirculos(bulto):
     ci = 0
 
     for c in img.find_circles(roi = bulto, threshold = 3000, x_margin = 30, y_margin = 30, r_margin = 30,
-            r_min = math.floor(bulto[2] * 0.3), r_max = bulto[2], r_step = 2):
+            r_min = math.floor(bulto[2] * 0.3), r_max = math.ceil(bulto[2] * 0.7), r_step = 2):
 
-        img.draw_circle(c.x(), c.y(), c.r(), color = (0, 0, 0), thickness = 4)
+        #img.draw_circle(c.x(), c.y(), c.r(), color = (0, 0, 0), thickness = 4)
 
         #print(c)
 
@@ -163,9 +164,9 @@ def buscarCirculos(bulto):
 
 while(True):
 
-    '''LED(1).on()
-    LED(2).on()
-    LED(3).on()'''
+    LED(1).off()
+    LED(2).off()
+    LED(3).off()
 
     funcionBuscarNegros = False
 
@@ -179,6 +180,7 @@ while(True):
     funcionBuscarNegros = buscarNegros()
 
     if funcionBuscarNegros[0] == True:
+
         # Tomas otros 4 snapshots
 
         # Analizas los 5 juntos
@@ -199,16 +201,16 @@ while(True):
                 LED(1).on()
                 LED(2).off()
                 LED(3).off()
-                print('H')
-                #pyb.delay(5000)
+                #print('H')
+                pyb.delay(1000)
 
             else:
 
                 LED(1).off()
                 LED(2).off()
                 LED(3).on()
-                print('U')
-                #pyb.delay(5000)
+                #print('U')
+                pyb.delay(1000)
 
         else:
 
@@ -223,8 +225,8 @@ while(True):
                     LED(1).off()
                     LED(2).on()
                     LED(3).off()
-                    print('S')
-                    #pyb.delay(5000)
+                    #print('S')
+                    pyb.delay(1000)
 
     '''elif funcionBuscarNegros[0] == False:
 
